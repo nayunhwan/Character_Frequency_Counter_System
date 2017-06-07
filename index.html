@@ -1,0 +1,112 @@
+<!Doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+
+  <title>Frequency Character</title>
+  <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.1.1/firebase.js"></script>
+  <style>
+    body{
+      padding: 20px;
+    }
+    button {
+      float: right;
+      margin: 10px;
+    }
+    #clear:after {
+      content:"";
+      display:block;
+      clear:both;
+    }
+  </style>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBm890QD9WGJNeBtk6OauKCTbyJk_ar9nE",
+      authDomain: "frequency-1f2a9.firebaseapp.com",
+      databaseURL: "https://frequency-1f2a9.firebaseio.com",
+      projectId: "frequency-1f2a9",
+      storageBucket: "frequency-1f2a9.appspot.com",
+      messagingSenderId: "180123270830"
+    };
+    firebase.initializeApp(config);
+
+    function writeUserData(char) {
+      firebase.database().ref('chars/' + char).transaction(function(current_value) {
+        return (current_value || 0) + 1;
+      })
+    }
+    function getData() {
+      firebase.database().ref('/chars').once('value').then(function(snapshot) {
+
+        console.log(snapshot.val());
+        $("#max").html("");
+        $("#min").html("");
+
+        var obj = snapshot.val();
+        var sortable = [];
+        for (var key in obj) {
+          sortable.push([key, obj[key]]);
+        }
+
+        sortable.sort(function(a, b) {
+          return a[1] - b[1];
+        });
+        sortable.reverse();
+        for(var i = 0; i < 5; i++) {
+          $("#max").append($("<li/>").html($("<h3/>").text(sortable[i])));
+        }
+        sortable.reverse();
+        for(var i = 0; i < 5; i++) {
+          $("#min").append($("<li/>").html($("<h3/>").text(sortable[i])));
+        }
+      });
+    }
+
+    $(document).ready(function() {
+      getData();
+      $("#btn").click(function() {
+        $("#max").html("<div><h4>Loading...</h4></div>");
+        $("#min").html("<div><h4>Loading...</h4></div>");
+
+        var regExp = /["가-힣"]/g;
+        var str = $("#area").val();
+        var match = str.match(regExp);
+        if(match != null) {
+          for (var i = 0; i < match.length; i++) {
+            writeUserData(match[i]);
+          }
+        }
+        getData();
+      });
+      $("#btn2").click(function() {
+        getData();
+      })
+    });
+  </script>
+</head>
+<body>
+  <h1>Character Frequency Counter System</h1>
+  <br/>
+  <textarea id="area" class="form-control" rows="3"></textarea>
+  <br/>
+  <div id="clear">
+    <button id="btn" class="btn btn-primary">Submit</button>
+    <button id="btn2" class="btn btn-default">Result</button>
+
+  </div>
+
+  <h2>Top 5 Characters</h2>
+  <ol id="max"><div><h4>Loading...</h4></div></ol>
+  <h2>Lowest 5 characters</h2>
+  <ol id="min"><div><h4>Loading...</h4></div></ol>
+</body>
+
+
+</html>
