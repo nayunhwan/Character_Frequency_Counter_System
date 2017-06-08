@@ -79,7 +79,7 @@
         var str = $("#area").val();
         var c = 0;
         while(c <= str.length) {
-          var sliceStr = str.slice(c, c+1000);
+          var sliceStr = str.slice(c, c+500);
           var match = sliceStr.match(regExp);
           console.log(match);
           if(match != null) {
@@ -88,7 +88,7 @@
             }
           }
           getData();
-          c += 1000;
+          c += 500;
         }
 
       });
