@@ -77,13 +77,20 @@
 
         var regExp = /["가-힣"]/g;
         var str = $("#area").val();
-        var match = str.match(regExp);
-        if(match != null) {
-          for (var i = 0; i < match.length; i++) {
-            writeUserData(match[i]);
+        var c = 0;
+        while(c <= str.length) {
+          var sliceStr = str.slice(c, c+1000);
+          var match = sliceStr.match(regExp);
+          console.log(match);
+          if(match != null) {
+            for (var i = 0; i < match.length; i++) {
+              writeUserData(match[i]);
+            }
           }
+          getData();
+          c += 1000;
         }
-        getData();
+
       });
       $("#btn2").click(function() {
         getData();
@@ -93,6 +100,7 @@
 </head>
 <body>
   <h1>Character Frequency Counter System</h1>
+  <h1>NEW</h1>
   <br/>
   <textarea id="area" class="form-control" rows="3"></textarea>
   <br/>
